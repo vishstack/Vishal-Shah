@@ -1,0 +1,504 @@
+/* ==========================================================================
+   Gift Guide — Product grid + quick-view popup
+   (sections/custom-product-grid.liquid, snippets/product-popup.liquid)
+   --------------------------------------------------------------------------
+   Figma 3840 frame → 1920 basis. Grid container 2844.3 / 3840 = 74.07% of the
+   page, gap 42.48 / 2 = 21.24px @1920 = 1.106vw, tiles 919.78 × 943.14.
+   ========================================================================== */
+
+/* ----- Tokens ------------------------------------------------------------ */
+.gg-grid {
+  --gg-color-black: #000000;
+  --gg-color-white: #ffffff;
+  --gg-hotspot-bg: rgba(248, 248, 248, 0.9); /* #F8F8F8 @ 90% */
+  --gg-hotspot-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  --gg-hotspot-size: clamp(30px, 1.875vw, 36px); /* 34px @1920 */
+  --gg-grid-width: 74.07%;
+  --gg-grid-gap: 1.106vw;
+  --gg-grid-margin-top: 5.47vw; /* 105px @1920 */
+  --gg-grid-margin-bottom: 3.2vw;
+  --gg-heading-size: 26px;
+  --gg-btn-shift: 6px;
+  --gg-btn-duration: 0.3s;
+
+  display: block;
+  width: 100%;
+  margin: var(--gg-grid-margin-top) 0 var(--gg-grid-margin-bottom);
+  color: var(--gg-color-black);
+  font-family: var(--gg-font-body);
+  font-weight: var(--gg-font-body-weight);
+}
+
+/* ----- Heading ----------------------------------------------------------- */
+.gg-grid__heading {
+  margin: 0 0 1.4vw;
+  font-family: var(--gg-font-heading);
+  font-weight: var(--gg-font-heading-weight);
+  font-size: var(--gg-heading-size);
+  line-height: 1.2;
+  text-align: center;
+}
+
+/* ----- Grid -------------------------------------------------------------- */
+.gg-grid__list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--gg-grid-gap);
+  width: var(--gg-grid-width);
+  margin: 0 auto;
+  padding: 0;
+  list-style: none;
+}
+
+.gg-grid__tile {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 919.78 / 943.14;
+  background: #f8f8f8;
+  border-radius: 0;
+}
+
+.gg-grid__img,
+.gg-grid__placeholder {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.gg-grid__empty-label {
+  position: absolute;
+  inset: auto 0 12px;
+  font-size: 12px;
+  text-align: center;
+  opacity: 0.6;
+}
+
+/* ----- Hotspot ----------------------------------------------------------- */
+.gg-hotspot {
+  position: absolute;
+  top: var(--gg-y, 50%);
+  left: var(--gg-x, 50%);
+  display: grid;
+  place-items: center;
+  width: var(--gg-hotspot-size);
+  height: var(--gg-hotspot-size);
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--gg-hotspot-bg);
+  box-shadow: var(--gg-hotspot-shadow);
+  color: var(--gg-color-black);
+  cursor: pointer;
+  transform: translate(-50%, -50%);
+  transition: transform var(--gg-btn-duration) ease;
+}
+
+.gg-hotspot:hover,
+.gg-hotspot:focus-visible {
+  transform: translate(-50%, -50%) scale(1.1);
+}
+
+.gg-hotspot:focus-visible {
+  outline: 2px solid var(--gg-color-black);
+  outline-offset: 2px;
+}
+
+.gg-hotspot[aria-busy='true'] {
+  cursor: progress;
+  opacity: 0.6;
+}
+
+/* "+" drawn with two bars — no icon asset request */
+.gg-hotspot__icon {
+  position: relative;
+  width: 36%;
+  height: 36%;
+}
+
+.gg-hotspot__icon::before,
+.gg-hotspot__icon::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  background: currentColor;
+  transform: translate(-50%, -50%);
+}
+
+.gg-hotspot__icon::before {
+  width: 100%;
+  height: 1.5px;
+}
+
+.gg-hotspot__icon::after {
+  width: 1.5px;
+  height: 100%;
+}
+
+/* ==========================================================================
+   Popup
+   ========================================================================== */
+.gg-popup {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+}
+
+.gg-popup[hidden] {
+  display: none;
+}
+
+.gg-popup__overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+}
+
+.gg-popup__dialog {
+  position: relative;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 460px;
+  max-height: 100%;
+  overflow-y: auto;
+  padding: 36px 28px 28px;
+  background: var(--gg-color-white);
+  color: var(--gg-color-black);
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.gg-popup__dialog:focus {
+  outline: none;
+}
+
+.gg-popup__close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.gg-popup__close:focus-visible,
+.gg-popup__pill input:focus-visible + .gg-popup__pill-label,
+.gg-popup__select:focus-visible,
+.gg-popup__add:focus-visible {
+  outline: 2px solid var(--gg-color-black);
+  outline-offset: 2px;
+}
+
+/* summary: image left, title / price / description right */
+.gg-popup__summary {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 18px;
+  align-items: start;
+}
+
+.gg-popup__media {
+  aspect-ratio: 1;
+  overflow: hidden;
+  background: #f8f8f8;
+}
+
+.gg-popup__img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.gg-popup__title {
+  margin: 0 0 10px;
+  font-size: 15px;
+  font-weight: inherit;
+  line-height: 1.3;
+}
+
+.gg-popup__price {
+  margin: 0 0 12px;
+  font-size: 15px;
+}
+
+.gg-popup__description {
+  font-size: 11px;
+  line-height: 1.45;
+  color: #555555;
+}
+
+.gg-popup__description p {
+  margin: 0;
+}
+
+/* option groups */
+.gg-popup__group {
+  margin: 22px 0 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+
+.gg-popup__label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 12px;
+}
+
+/* pills (colour-type options): equal width, shared borders, colour strip left */
+.gg-popup__pills {
+  display: flex;
+}
+
+.gg-popup__pill {
+  flex: 1 1 0;
+  min-width: 0;
+  position: relative;
+}
+
+.gg-popup__pill + .gg-popup__pill {
+  margin-left: -1px;
+}
+
+.gg-popup__pill input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.gg-popup__pill-label {
+  --gg-swatch: transparent;
+
+  position: relative;
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  height: 38px;
+  padding: 0 12px 0 14px;
+  border: 1px solid #000000;
+  font-size: 13px;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: background-color var(--gg-btn-duration) ease;
+}
+
+.gg-popup__pill-label::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 5px;
+  background: var(--gg-swatch);
+}
+
+.gg-popup__pill input:checked + .gg-popup__pill-label {
+  z-index: 1;
+  box-shadow: inset 0 0 0 1px #000000;
+}
+
+/* sold-out / unavailable combination indicator */
+.gg-popup__pill--unavailable .gg-popup__pill-label,
+.gg-popup__option--unavailable {
+  color: #9a9a9a;
+  text-decoration: line-through;
+}
+
+/* selects (size-type options) */
+.gg-popup__select-wrap {
+  position: relative;
+}
+
+.gg-popup__select {
+  appearance: none;
+  -webkit-appearance: none;
+  box-sizing: border-box;
+  width: 100%;
+  height: 40px;
+  padding: 0 44px 0 12px;
+  border: 1px solid #000000;
+  border-radius: 0;
+  background: var(--gg-color-white);
+  color: inherit;
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.gg-popup__select-wrap::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  width: 8px;
+  height: 8px;
+  border-right: 1.2px solid currentColor;
+  border-bottom: 1.2px solid currentColor;
+  transform: translateY(-70%) rotate(45deg);
+  pointer-events: none;
+}
+
+.gg-popup__select-wrap::before {
+  content: '';
+  position: absolute;
+  top: 1px;
+  bottom: 1px;
+  right: 35px;
+  width: 1px;
+  background: #000000;
+  pointer-events: none;
+}
+
+/* add to cart (styled independently of the banner so the section stands alone) */
+.gg-popup__add {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  box-sizing: border-box;
+  width: 100%;
+  height: 46px;
+  margin-top: 32px;
+  border: 1px solid var(--gg-color-black);
+  border-radius: 0;
+  background: var(--gg-color-black);
+  color: var(--gg-color-white);
+  font: inherit;
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    background-color var(--gg-btn-duration) ease,
+    color var(--gg-btn-duration) ease,
+    opacity var(--gg-btn-duration) ease;
+}
+
+.gg-popup__add .gg-btn__arrow {
+  width: 28px;
+  height: auto;
+  transition: transform var(--gg-btn-duration) ease;
+}
+
+.gg-popup__add:not(:disabled):hover,
+.gg-popup__add:not(:disabled):focus-visible {
+  background: var(--gg-color-white);
+  color: var(--gg-color-black);
+}
+
+.gg-popup__add:not(:disabled):hover .gg-btn__arrow,
+.gg-popup__add:not(:disabled):focus-visible .gg-btn__arrow {
+  transform: translateX(var(--gg-btn-shift));
+}
+
+.gg-popup__add:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.gg-popup__add[aria-busy='true'] {
+  cursor: progress;
+}
+
+.gg-popup__feedback {
+  min-height: 1.4em;
+  margin: 12px 0 0;
+  font-size: 12px;
+}
+
+.gg-popup__feedback:empty {
+  display: none;
+}
+
+.gg-popup__feedback--error {
+  color: #b00020;
+}
+
+.gg-popup__feedback a {
+  color: inherit;
+}
+
+/* body scroll lock while the dialog is open (class toggled by JS) */
+body.gg-popup-open {
+  overflow: hidden;
+}
+
+/* ==========================================================================
+   Mobile (≤ 749px): 2 × 3 grid, near full width, small gap; popup fills screen
+   ========================================================================== */
+@media screen and (max-width: 749px) {
+  .gg-grid {
+    --gg-grid-width: calc(100% - 36px);
+    --gg-grid-gap: 6px;
+    --gg-grid-margin-top: 28px;
+    --gg-grid-margin-bottom: 32px;
+    --gg-hotspot-size: 24px;
+  }
+
+  .gg-grid__heading {
+    margin-bottom: 16px;
+  }
+
+  .gg-grid__list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .gg-popup {
+    padding: 12px;
+  }
+
+  .gg-popup__dialog {
+    max-width: none;
+    padding: 40px 20px 20px;
+  }
+
+  .gg-popup__summary {
+    grid-template-columns: 96px 1fr;
+    gap: 14px;
+  }
+}
+
+@media screen and (min-width: 750px) {
+  .gg-grid__heading--mobile-only {
+    display: none;
+  }
+}
+
+/* ----- Reduced motion ----------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .gg-hotspot,
+  .gg-popup__add,
+  .gg-popup__add .gg-btn__arrow,
+  .gg-popup__pill-label {
+    transition: none;
+  }
+
+  .gg-hotspot:hover,
+  .gg-hotspot:focus-visible {
+    transform: translate(-50%, -50%);
+  }
+
+  .gg-popup__add:not(:disabled):hover .gg-btn__arrow,
+  .gg-popup__add:not(:disabled):focus-visible .gg-btn__arrow {
+    transform: none;
+  }
+}

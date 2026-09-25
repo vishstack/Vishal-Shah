@@ -1,0 +1,344 @@
+{% comment %}
+  ------------------------------------------------------------------------------
+  Gift Guide — Banner section
+  ------------------------------------------------------------------------------
+  Fully custom hero built from scratch (no Dawn image-banner / header reuse).
+  Three stacked parts share one markup tree; CSS grid re-flows them per breakpoint:
+
+    1. Top bar   — brand (left), tagline (center), CHOOSE GIFT (right) on desktop.
+                   Hamburger (left) + centered brand on mobile.
+    2. Hero      — illustration as full-bleed media with the content block
+                   bottom-left on desktop; on mobile the heading/paragraph sit on
+                   white ABOVE the image and SHOP NOW is overlaid on the image.
+    3. Strip     — centered uppercase message; desktop and mobile copy differ.
+
+  Every colour and typographic token is exposed as a `--gg-*` custom property on
+  the section root so `assets/custom-banner.css` stays free of magic numbers.
+  The stylesheet is loaded here only (section-scoped asset loading).
+
+  "Hide theme header/footer" — see the comment block above the `{% style %}`
+  further down for the recommendation and trade-off.
+  ------------------------------------------------------------------------------
+{% endcomment %}
+
+{{ 'custom-banner.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign s = section.settings
+  assign heading_font = s.heading_font
+  assign body_font = s.body_font
+
+  assign image_desktop = s.image_desktop
+  assign image_mobile = s.image_mobile
+  if image_mobile == blank
+    assign image_mobile = image_desktop
+  endif
+
+  assign hero_alt = s.heading | strip_html
+-%}
+
+{%- style -%}
+  {{ heading_font | font_face: font_display: 'swap' }}
+  {{ body_font | font_face: font_display: 'swap' }}
+
+  #shopify-section-{{ section.id }} .gg-banner {
+    --gg-font-heading: {{ heading_font.family }}, {{ heading_font.fallback_families }};
+    --gg-font-heading-weight: {{ heading_font.weight }};
+    --gg-font-body: {{ body_font.family }}, {{ body_font.fallback_families }};
+    --gg-font-body-weight: {{ body_font.weight }};
+  }
+
+  {%- comment -%}
+    Top bar decision
+    ----------------
+    The Figma top bar visually replaces Dawn's header, so it is built inside this
+    section (editable, no dependency on Dawn's header markup). To avoid showing two
+    headers we hide Dawn's header-group and footer-group with a template-scoped
+    style instead of forking `layout/theme.liquid` into a custom layout:
+
+      + one layout file to maintain — no 400-line copy that drifts on Dawn updates
+      + merchant can flip it in the editor (this toggle) without touching code
+      + the header DOM is still present, so the cart-count bubble keeps updating
+        for the rest of the store and any drawer/notification logic stays intact
+      - header/footer HTML + their JS still load (a few KB) and the bubble is
+        invisible on this page — the quick-view popup therefore shows its own
+        "added to cart" confirmation with a link to the cart.
+
+    A custom layout would truly remove the markup but costs maintainability and
+    editor control, which is why the CSS approach is the recommendation here.
+  {%- endcomment -%}
+  {%- if s.hide_theme_chrome -%}
+    .shopify-section-group-header-group,
+    .shopify-section-group-footer-group {
+      display: none;
+    }
+  {%- endif -%}
+{%- endstyle -%}
+
+<section
+  class="gg-banner"
+  style="
+    --gg-color-black: #000000;
+    --gg-color-white: #ffffff;
+    --gg-topbar-bg: {{ s.topbar_bg }};
+    --gg-gift-bg: {{ s.gift_bg }};
+    --gg-gift-text: {{ s.gift_text }};
+    --gg-strip-bg: {{ s.strip_bg }};
+    --gg-button-bg: {{ s.button_bg }};
+    --gg-button-text: {{ s.button_text }};
+  "
+>
+  {%- comment -%} 1. Top bar {%- endcomment -%}
+  <div class="gg-topbar">
+    <a class="gg-topbar__menu" href="{{ s.menu_link | default: '#' }}" aria-label="Menu">
+      <svg class="gg-topbar__menu-icon" viewBox="0 0 22 14" width="22" height="14" aria-hidden="true" focusable="false">
+        <path d="M0 1h22M0 7h22M0 13h22" stroke="currentColor" stroke-width="1.6" fill="none"/>
+      </svg>
+    </a>
+
+    <p class="gg-topbar__brand">{{ s.brand_text | escape }}</p>
+
+    {%- if s.topbar_text != blank -%}
+      <p class="gg-topbar__text">{{ s.topbar_text | escape }}</p>
+    {%- endif -%}
+
+    {%- if s.gift_label != blank -%}
+      <a class="gg-btn gg-btn--gift" href="{{ s.gift_link | default: '#' }}">
+        <span class="gg-btn__label">{{ s.gift_label | escape }}</span>
+        {%- render 'gg-arrow-icon' -%}
+      </a>
+    {%- endif -%}
+  </div>
+
+  {%- comment -%} 2. Hero {%- endcomment -%}
+  <div class="gg-hero">
+    <div class="gg-hero__media">
+      {%- if image_mobile != blank -%}
+        <picture>
+          {%- if image_desktop != blank -%}
+            <source
+              media="(min-width: 750px)"
+              srcset="
+                {{ image_desktop | image_url: width: 1440 }} 1440w,
+                {{ image_desktop | image_url: width: 1920 }} 1920w,
+                {{ image_desktop | image_url: width: 2880 }} 2880w,
+                {{ image_desktop | image_url: width: 3840 }} 3840w
+              "
+              sizes="100vw"
+            >
+          {%- endif -%}
+          {{-
+            image_mobile
+            | image_url: width: 1500
+            | image_tag:
+              widths: '375, 550, 750, 1100, 1500',
+              sizes: '100vw',
+              loading: 'eager',
+              fetchpriority: 'high',
+              class: 'gg-hero__img',
+              alt: hero_alt
+          -}}
+        </picture>
+      {%- else -%}
+        <div class="gg-hero__placeholder">{{ 'lifestyle-1' | placeholder_svg_tag: 'gg-hero__placeholder-svg' }}</div>
+      {%- endif -%}
+    </div>
+
+    <h1 class="gg-hero__heading">{{ s.heading | escape }}</h1>
+
+    <p class="gg-hero__text gg-hero__text--desktop">{{ s.text_desktop | escape }}</p>
+    <p class="gg-hero__text gg-hero__text--mobile">{{ s.text_mobile | escape }}</p>
+
+    {%- if s.shop_label != blank -%}
+      <a class="gg-btn gg-btn--shop" href="{{ s.shop_link | default: '#' }}">
+        <span class="gg-btn__label">{{ s.shop_label | escape }}</span>
+        {%- render 'gg-arrow-icon' -%}
+      </a>
+    {%- endif -%}
+  </div>
+
+  {%- comment -%} 3. Strip {%- endcomment -%}
+  <div class="gg-strip">
+    <p class="gg-strip__text gg-strip__text--desktop">{{ s.strip_text_desktop | escape }}</p>
+    <p class="gg-strip__text gg-strip__text--mobile">{{ s.strip_text_mobile | escape }}</p>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Gift Guide Banner",
+  "tag": "section",
+  "class": "section-gg-banner",
+  "enabled_on": {
+    "templates": ["page", "index"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Top bar"
+    },
+    {
+      "type": "text",
+      "id": "brand_text",
+      "label": "Brand text",
+      "default": "TISSO VISON"
+    },
+    {
+      "type": "text",
+      "id": "topbar_text",
+      "label": "Center text (desktop only)",
+      "default": "Find the ideal gift for your loved ones."
+    },
+    {
+      "type": "text",
+      "id": "gift_label",
+      "label": "Button label (desktop only)",
+      "default": "CHOOSE GIFT"
+    },
+    {
+      "type": "url",
+      "id": "gift_link",
+      "label": "Button link"
+    },
+    {
+      "type": "url",
+      "id": "menu_link",
+      "label": "Hamburger link (mobile only)",
+      "info": "Dawn's header is hidden on this template, so the hamburger links to a page of your choice."
+    },
+    {
+      "type": "header",
+      "content": "Hero"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "The Gift Guide"
+    },
+    {
+      "type": "textarea",
+      "id": "text_desktop",
+      "label": "Paragraph (desktop)",
+      "default": "Discover Joy: Your Ultimate Holiday Gift Destination. Explore our curated selection and find the perfect gifts to delight your loved ones this holiday season."
+    },
+    {
+      "type": "textarea",
+      "id": "text_mobile",
+      "label": "Paragraph (mobile)",
+      "default": "Discover Joy: Your Ultimate Holiday Gift Destination."
+    },
+    {
+      "type": "text",
+      "id": "shop_label",
+      "label": "Button label",
+      "default": "SHOP NOW"
+    },
+    {
+      "type": "url",
+      "id": "shop_link",
+      "label": "Button link"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_desktop",
+      "label": "Illustration (desktop)",
+      "info": "Recommended 3840 × 2000 px, black and white line art."
+    },
+    {
+      "type": "image_picker",
+      "id": "image_mobile",
+      "label": "Illustration (mobile)",
+      "info": "Different crop for mobile. Falls back to the desktop image."
+    },
+    {
+      "type": "header",
+      "content": "Strip"
+    },
+    {
+      "type": "text",
+      "id": "strip_text_desktop",
+      "label": "Strip text (desktop)",
+      "default": "SUSTAINABLE, ETHICALLY MADE CLOTHES IN SIZES XXS TO 6XL"
+    },
+    {
+      "type": "text",
+      "id": "strip_text_mobile",
+      "label": "Strip text (mobile)",
+      "default": "SUSTAINABLE, ETHICALLY MADE ACTIVEWEAR"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "topbar_bg",
+      "label": "Top bar background",
+      "default": "#F5F5F5"
+    },
+    {
+      "type": "color",
+      "id": "gift_bg",
+      "label": "CHOOSE GIFT background",
+      "default": "#FFF544"
+    },
+    {
+      "type": "color",
+      "id": "gift_text",
+      "label": "CHOOSE GIFT text",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "strip_bg",
+      "label": "Strip background",
+      "default": "#F5F5F5"
+    },
+    {
+      "type": "color",
+      "id": "button_bg",
+      "label": "SHOP NOW background",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "button_text",
+      "label": "SHOP NOW text",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "font_picker",
+      "id": "heading_font",
+      "label": "Heading font",
+      "default": "jost_n5"
+    },
+    {
+      "type": "font_picker",
+      "id": "body_font",
+      "label": "Body font",
+      "default": "jost_n4"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "checkbox",
+      "id": "hide_theme_chrome",
+      "label": "Hide theme header and footer",
+      "info": "The top bar above replaces Dawn's header on this page. Hides the header and footer section groups with CSS; the theme layout is not modified.",
+      "default": true
+    }
+  ],
+  "presets": [
+    {
+      "name": "Gift Guide Banner"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,50 @@
+{
+  "sections": {
+    "gift_banner": {
+      "type": "custom-banner",
+      "settings": {}
+    },
+    "gift_grid": {
+      "type": "custom-product-grid",
+      "blocks": {
+        "tile_1": {
+          "type": "product",
+          "settings": {}
+        },
+        "tile_2": {
+          "type": "product",
+          "settings": {}
+        },
+        "tile_3": {
+          "type": "product",
+          "settings": {}
+        },
+        "tile_4": {
+          "type": "product",
+          "settings": {}
+        },
+        "tile_5": {
+          "type": "product",
+          "settings": {}
+        },
+        "tile_6": {
+          "type": "product",
+          "settings": {}
+        }
+      },
+      "block_order": [
+        "tile_1",
+        "tile_2",
+        "tile_3",
+        "tile_4",
+        "tile_5",
+        "tile_6"
+      ],
+      "settings": {}
+    }
+  },
+  "order": [
+    "gift_banner",
+    "gift_grid"
+  ]
+}

@@ -1,0 +1,371 @@
+/* ==========================================================================
+   Gift Guide — Banner (sections/custom-banner.liquid)
+   --------------------------------------------------------------------------
+   Scale: Figma frame is 3840px wide → 1920px "design" width. Any px value in
+   the design at 1920 is expressed as `px / 19.2` vw so the layout scales
+   proportionally, clamped where the brief supplies a fixed range.
+   Colours / fonts arrive as --gg-* custom properties from the section.
+   Breakpoint: Dawn's 750px (mobile ≤ 749px).
+   ========================================================================== */
+
+/* ----- Tokens (desktop 1920 basis) ------------------------------------- */
+.gg-banner {
+  /* horizontal gutter: 180px @1920 */
+  --gg-gutter: 9.375vw;
+  /* top bar: 100px @1920 */
+  --gg-topbar-height: clamp(56px, 5.2vw, 100px);
+  --gg-brand-size: clamp(14px, 1.04vw, 20px);
+  --gg-brand-tracking: 0.25em;
+  --gg-topbar-text-size: clamp(12px, 0.78vw, 15px);
+  /* CHOOSE GIFT: 214 × 45 @1920 */
+  --gg-gift-width: clamp(150px, 11.15vw, 214px);
+  --gg-gift-height: clamp(34px, 2.34vw, 45px);
+  --gg-gift-size: clamp(10px, 0.6vw, 12px);
+  /* hero copy */
+  --gg-heading-size: clamp(48px, 4.29vw, 82.4px);
+  --gg-text-size: clamp(15px, 1.226vw, 23.5px);
+  --gg-text-max-width: 28.4vw; /* 545px @1920 */
+  /* SHOP NOW: 259 × 59 @1920 (4.4:1) */
+  --gg-shop-width: 13.49vw;
+  --gg-shop-height: 3.06vw;
+  --gg-shop-size: clamp(10px, 0.68vw, 13px);
+  /* strip: 56px @1920 */
+  --gg-strip-height: clamp(36px, 2.92vw, 56px);
+  --gg-strip-size: clamp(10px, 0.68vw, 13px);
+  --gg-strip-tracking: 0.08em;
+  /* button hover */
+  --gg-btn-shift: 6px;
+  --gg-btn-duration: 0.3s;
+
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin: 0;
+  color: var(--gg-color-black);
+  font-family: var(--gg-font-body);
+  font-weight: var(--gg-font-body-weight);
+  background: var(--gg-color-white);
+}
+
+.gg-banner p,
+.gg-banner h1 {
+  margin: 0;
+}
+
+/* ----- Buttons (shared by both sections via this file) ------------------ */
+.gg-btn {
+  --btn-bg: var(--gg-button-bg);
+  --btn-fg: var(--gg-button-text);
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.9em;
+  box-sizing: border-box;
+  border: 1px solid var(--btn-bg);
+  border-radius: 0;
+  background: var(--btn-bg);
+  color: var(--btn-fg);
+  font-family: var(--gg-font-body);
+  font-weight: var(--gg-font-body-weight);
+  letter-spacing: 0.04em;
+  line-height: 1;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background-color var(--gg-btn-duration) ease,
+    color var(--gg-btn-duration) ease;
+}
+
+.gg-btn__arrow {
+  flex: 0 0 auto;
+  width: 2.15em;
+  height: auto;
+  transition: transform var(--gg-btn-duration) ease;
+}
+
+/* Hover/focus: colours invert, arrow slides right */
+.gg-btn:hover,
+.gg-btn:focus-visible {
+  background: var(--btn-fg);
+  color: var(--btn-bg);
+}
+
+.gg-btn:hover .gg-btn__arrow,
+.gg-btn:focus-visible .gg-btn__arrow {
+  transform: translateX(var(--gg-btn-shift));
+}
+
+.gg-btn:focus-visible {
+  outline: 2px solid var(--gg-color-black);
+  outline-offset: 2px;
+}
+
+.gg-btn--gift {
+  --btn-bg: var(--gg-gift-bg);
+  --btn-fg: var(--gg-gift-text);
+  width: var(--gg-gift-width);
+  height: var(--gg-gift-height);
+  font-size: var(--gg-gift-size);
+}
+
+.gg-btn--shop {
+  width: var(--gg-shop-width);
+  height: var(--gg-shop-height);
+  min-width: 200px;
+  min-height: 46px;
+  font-size: var(--gg-shop-size);
+}
+
+/* ----- Top bar ----------------------------------------------------------- */
+/* 1fr | auto | 1fr keeps the middle column (tagline / brand) page-centered
+   regardless of the outer columns' widths. */
+.gg-topbar {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 2vw;
+  min-height: var(--gg-topbar-height);
+  padding: 0 var(--gg-gutter);
+  background: var(--gg-topbar-bg);
+}
+
+.gg-topbar__menu {
+  display: none; /* mobile only */
+  color: inherit;
+  line-height: 0;
+}
+
+.gg-topbar .gg-btn--gift {
+  justify-self: end;
+}
+
+.gg-topbar__brand {
+  font-family: var(--gg-font-heading);
+  font-weight: var(--gg-font-heading-weight);
+  font-size: var(--gg-brand-size);
+  letter-spacing: var(--gg-brand-tracking);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.gg-topbar__text {
+  font-size: var(--gg-topbar-text-size);
+  text-align: center;
+}
+
+/* ----- Hero -------------------------------------------------------------- */
+.gg-hero {
+  position: relative;
+  display: grid;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.gg-hero__media,
+.gg-hero__media picture,
+.gg-hero__img,
+.gg-hero__placeholder,
+.gg-hero__placeholder-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.gg-hero__img,
+.gg-hero__placeholder-svg {
+  object-fit: cover;
+  object-position: center;
+}
+
+.gg-hero__placeholder {
+  background: #f8f8f8;
+}
+
+.gg-hero__heading {
+  font-family: var(--gg-font-heading);
+  font-weight: var(--gg-font-heading-weight);
+  font-size: var(--gg-heading-size);
+  line-height: 1;
+  letter-spacing: 0;
+}
+
+.gg-hero__text {
+  font-size: var(--gg-text-size);
+  line-height: 1.4;
+  letter-spacing: 0;
+}
+
+/* ----- Strip ------------------------------------------------------------- */
+.gg-strip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--gg-strip-height);
+  padding: 0.5em var(--gg-gutter);
+  background: var(--gg-strip-bg);
+  text-align: center;
+}
+
+.gg-strip__text {
+  font-size: var(--gg-strip-size);
+  letter-spacing: var(--gg-strip-tracking);
+  text-transform: uppercase;
+}
+
+/* ==========================================================================
+   Desktop (≥ 750px): banner keeps the Figma frame ratio; media fills the hero
+   and the content block sits bottom-left over it.
+   ========================================================================== */
+@media screen and (min-width: 750px) {
+  .gg-banner {
+    aspect-ratio: 3840 / 2340;
+  }
+
+  .gg-hero {
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr auto auto auto;
+    grid-template-areas:
+      'media'
+      'heading'
+      'text'
+      'button';
+    /* content block: 180px left, button bottom 112px above the strip @1920 */
+    padding: 0 var(--gg-gutter) 5.83vw;
+  }
+
+  .gg-hero__media {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+  }
+
+  .gg-hero__heading,
+  .gg-hero__text,
+  .gg-btn--shop {
+    position: relative;
+    z-index: 1;
+  }
+
+  .gg-hero__heading {
+    grid-area: heading;
+    margin-bottom: 1vw;
+  }
+
+  .gg-hero__text--desktop {
+    grid-area: text;
+    max-width: var(--gg-text-max-width);
+    margin-bottom: 1.25vw;
+  }
+
+  .gg-hero .gg-btn--shop {
+    grid-area: button;
+    justify-self: start;
+  }
+
+  /* mobile-only elements */
+  .gg-hero__text--mobile,
+  .gg-strip__text--mobile {
+    display: none;
+  }
+}
+
+/* ==========================================================================
+   Mobile (≤ 749px): different structure — hamburger + centered brand,
+   centered heading/paragraph on white, image below with SHOP NOW overlaid.
+   ========================================================================== */
+@media screen and (max-width: 749px) {
+  .gg-banner {
+    --gg-gutter: 16px;
+    --gg-topbar-height: 52px;
+    --gg-brand-size: 16px;
+    --gg-brand-tracking: 0.2em;
+    --gg-heading-size: 30px;
+    --gg-text-size: 14px;
+    --gg-shop-width: 174px;
+    --gg-shop-height: 42px;
+    --gg-shop-size: 12px;
+    --gg-strip-height: 26px;
+    --gg-strip-size: 10px;
+    --gg-strip-tracking: 0.06em;
+  }
+
+  .gg-topbar {
+    grid-template-columns: 1fr auto 1fr;
+    gap: 8px;
+  }
+
+  .gg-topbar__menu {
+    display: inline-flex;
+    justify-self: start;
+    padding: 8px;
+    margin-left: -8px;
+  }
+
+  .gg-topbar__text,
+  .gg-btn--gift,
+  .gg-hero__text--desktop,
+  .gg-strip__text--desktop {
+    display: none;
+  }
+
+  .gg-hero {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto 1fr;
+    grid-template-areas:
+      'heading'
+      'text'
+      'media';
+    text-align: center;
+  }
+
+  .gg-hero__heading {
+    grid-area: heading;
+    padding: 28px var(--gg-gutter) 0;
+  }
+
+  .gg-hero__text--mobile {
+    grid-area: text;
+    max-width: 300px;
+    justify-self: center;
+    padding: 12px var(--gg-gutter) 24px;
+  }
+
+  /* image and button share the same grid cell → button overlays the image */
+  .gg-hero__media,
+  .gg-hero .gg-btn--shop {
+    grid-area: media;
+  }
+
+  .gg-hero__media {
+    height: auto;
+  }
+
+  .gg-hero__img,
+  .gg-hero__placeholder-svg {
+    height: auto;
+    aspect-ratio: 375 / 335;
+  }
+
+  .gg-hero .gg-btn--shop {
+    align-self: end;
+    justify-self: center;
+    margin-bottom: 18px;
+    min-width: 0;
+    min-height: 0;
+  }
+}
+
+/* ----- Reduced motion ----------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .gg-btn,
+  .gg-btn__arrow {
+    transition: none;
+  }
+
+  .gg-btn:hover .gg-btn__arrow,
+  .gg-btn:focus-visible .gg-btn__arrow {
+    transform: none;
+  }
+}

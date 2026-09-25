@@ -1,0 +1,55 @@
+{% comment %}
+  ------------------------------------------------------------------------------
+  Gift Guide — Quick view popup (single instance per grid section)
+  ------------------------------------------------------------------------------
+  Static shell only; every `[data-*]` node is filled by <product-popup>
+  (assets/custom-popup.js) with the clicked product's data. Variant controls are
+  generated into `[data-options]` from the product JSON — nothing hardcoded.
+
+  Accessibility: role="dialog" + aria-modal, labelled by the product title,
+  focus moves in on open and back to the hotspot on close (handled in JS).
+
+  Params:
+    section_id  {String}  used to make the title id unique per section
+  ------------------------------------------------------------------------------
+{% endcomment %}
+
+<div class="gg-popup" data-popup hidden>
+  <div class="gg-popup__overlay" data-overlay></div>
+
+  <div
+    class="gg-popup__dialog"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="gg-popup-title-{{ section_id }}"
+    tabindex="-1"
+  >
+    <button type="button" class="gg-popup__close" data-close aria-label="{{ 'accessibility.close' | t }}">
+      <svg viewBox="0 0 12 12" width="12" height="12" aria-hidden="true" focusable="false">
+        <path d="M1 1l10 10M11 1L1 11" stroke="currentColor" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+      </svg>
+    </button>
+
+    <div class="gg-popup__summary">
+      <div class="gg-popup__media">
+        {%- comment -%} No `src` until a product is loaded (an empty src would request the page URL) {%- endcomment -%}
+        <img class="gg-popup__img" data-image alt="" width="220" height="220" hidden>
+      </div>
+      <div class="gg-popup__intro">
+        <h3 class="gg-popup__title" id="gg-popup-title-{{ section_id }}" data-title></h3>
+        <p class="gg-popup__price" data-price></p>
+        <div class="gg-popup__description" data-description></div>
+      </div>
+    </div>
+
+    {%- comment -%} Option groups (pills / selects) are injected here {%- endcomment -%}
+    <div class="gg-popup__options" data-options></div>
+
+    <button type="button" class="gg-popup__add" data-add>
+      <span data-add-label>{{ 'products.product.add_to_cart' | t }}</span>
+      {%- render 'gg-arrow-icon' -%}
+    </button>
+
+    <p class="gg-popup__feedback" data-feedback role="status" aria-live="polite"></p>
+  </div>
+</div>
