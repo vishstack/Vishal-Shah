@@ -57,7 +57,7 @@
         "tile_3": {
           "type": "product",
           "settings": {
-            "product": "",
+            "product": "flannel-check-shirt",
             "hotspot_x": 50,
             "hotspot_y": 50
           }
@@ -65,7 +65,7 @@
         "tile_4": {
           "type": "product",
           "settings": {
-            "product": "",
+            "product": "leather-biker-jacket",
             "hotspot_x": 50,
             "hotspot_y": 50
           }
@@ -73,7 +73,7 @@
         "tile_5": {
           "type": "product",
           "settings": {
-            "product": "",
+            "product": "varsity-bomber-jacket",
             "hotspot_x": 50,
             "hotspot_y": 50
           }
@@ -81,7 +81,7 @@
         "tile_6": {
           "type": "product",
           "settings": {
-            "product": "",
+            "product": "denim-jacket",
             "hotspot_x": 50,
             "hotspot_y": 50
           }
@@ -98,7 +98,7 @@
       "settings": {
         "heading": "Tisso vison in the wild",
         "show_heading_desktop": false,
-        "upsell_product": "",
+        "upsell_product": "soft-winter-jacket",
         "heading_font": "jost_n4",
         "body_font": "jost_n4"
       }
