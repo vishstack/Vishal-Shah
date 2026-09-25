@@ -1,19 +1,3 @@
-{% comment %}
-  ------------------------------------------------------------------------------
-  Gift Guide — Quick view popup (single instance per grid section)
-  ------------------------------------------------------------------------------
-  Static shell only; every `[data-*]` node is filled by <product-popup>
-  (assets/custom-popup.js) with the clicked product's data. Variant controls are
-  generated into `[data-options]` from the product JSON — nothing hardcoded.
-
-  Accessibility: role="dialog" + aria-modal, labelled by the product title,
-  focus moves in on open and back to the hotspot on close (handled in JS).
-
-  Params:
-    section_id  {String}  used to make the title id unique per section
-  ------------------------------------------------------------------------------
-{% endcomment %}
-
 <div class="gg-popup" data-popup hidden>
   <div class="gg-popup__overlay" data-overlay></div>
 

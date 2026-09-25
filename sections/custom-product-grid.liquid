@@ -1,25 +1,3 @@
-{% comment %}
-  ------------------------------------------------------------------------------
-  Gift Guide — Product grid section ("Tisso vison in the wild")
-  ------------------------------------------------------------------------------
-  Custom 3 × 2 (desktop) / 2 × 3 (mobile) grid of lifestyle tiles. Each tile has
-  a "+" hotspot positioned over the product; clicking it opens ONE shared
-  quick-view popup (snippets/product-popup.liquid) driven by assets/custom-popup.js.
-
-  Efficiency notes
-  - The whole section is wrapped in the `<product-popup>` custom element so the
-    JS scopes its listeners to this element (event delegation, no globals).
-  - Product data is fetched from `/products/{handle}.js` on first click and
-    cached in memory (see custom-popup.js for the rationale).
-  - Stylesheet and script are loaded here only; the script is deferred.
-
-  Business rule (upsell)
-  - `upsell_product` = "Soft Winter Jacket". When the variant being added has
-    option values "Black" AND "Medium" the popup adds this product too, in the
-    same /cart/add.js request. No handle/ID is hardcoded — it is this setting.
-  ------------------------------------------------------------------------------
-{% endcomment %}
-
 {{ 'custom-grid.css' | asset_url | stylesheet_tag }}
 
 {%- liquid
@@ -91,7 +69,7 @@
             | image_url: width: 1100
             | image_tag:
               widths: '375, 550, 750, 920, 1100',
-              sizes: '(min-width: 750px) 24.7vw, 50vw',
+              sizes: '(min-width: 1101px) 447px, 50vw',
               loading: loading,
               class: 'gg-grid__img',
               alt: alt
@@ -144,8 +122,8 @@
       "type": "checkbox",
       "id": "show_heading_desktop",
       "label": "Show heading on desktop",
-      "info": "The desktop design shows no heading; mobile always shows it.",
-      "default": false
+      "info": "Mobile always shows the heading.",
+      "default": true
     },
     {
       "type": "product",
@@ -161,7 +139,7 @@
       "type": "font_picker",
       "id": "heading_font",
       "label": "Heading font (serif)",
-      "default": "playfair_display_n4"
+      "default": "jost_n4"
     },
     {
       "type": "font_picker",

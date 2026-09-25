@@ -2,8 +2,11 @@
    Gift Guide — Product grid + quick-view popup
    (sections/custom-product-grid.liquid, snippets/product-popup.liquid)
    --------------------------------------------------------------------------
-   Figma 3840 frame → 1920 basis. Grid container 2844.3 / 3840 = 74.07% of the
-   page, gap 42.48 / 2 = 21.24px @1920 = 1.106vw, tiles 919.78 × 943.14.
+   Reference: Figma export. Desktop: 1339px band (100% − 32px below that),
+   3 columns, 20px gap, tiles 433 × 444, serif (Lustria) heading 36px
+   left-aligned, 90px above / 51px below. 2 columns ≤ 1100px.
+   Mobile (≤ 767px): 100% − 33px, 2 columns, 4px gap, tiles 169 × 186.42,
+   heading 24px centred.
    ========================================================================== */
 
 /* ----- Tokens ------------------------------------------------------------ */
@@ -12,14 +15,16 @@
   --gg-color-white: #ffffff;
   --gg-hotspot-bg: rgba(248, 248, 248, 0.9); /* #F8F8F8 @ 90% */
   --gg-hotspot-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  --gg-hotspot-size: clamp(30px, 1.875vw, 36px); /* 34px @1920 */
-  --gg-grid-width: 74.07%;
-  --gg-grid-gap: 1.106vw;
-  --gg-grid-margin-top: 5.47vw; /* 105px @1920 */
-  --gg-grid-margin-bottom: 3.2vw;
-  --gg-heading-size: 26px;
-  --gg-btn-shift: 6px;
-  --gg-btn-duration: 0.3s;
+  --gg-hotspot-size: 22px;
+  --gg-grid-width: min(1339px, 100% - 32px);
+  --gg-grid-gap: 20px;
+  --gg-grid-margin-top: 90px;
+  --gg-grid-margin-bottom: 51px;
+  --gg-heading-size: 36px;
+  --gg-heading-gap: 30px;
+  --gg-tile-ratio: 433 / 444;
+  --gg-btn-shift: 4px;
+  --gg-btn-duration: 0.18s;
 
   display: block;
   width: 100%;
@@ -27,16 +32,21 @@
   color: var(--gg-color-black);
   font-family: var(--gg-font-body);
   font-weight: var(--gg-font-body-weight);
+  letter-spacing: 0; /* Dawn's body sets 0.06rem — the design uses 0 */
 }
 
 /* ----- Heading ----------------------------------------------------------- */
+/* desktop: left-aligned with the grid; mobile: centered (see media query) */
 .gg-grid__heading {
-  margin: 0 0 1.4vw;
+  width: var(--gg-grid-width);
+  margin: 0 auto var(--gg-heading-gap);
   font-family: var(--gg-font-heading);
   font-weight: var(--gg-font-heading-weight);
   font-size: var(--gg-heading-size);
   line-height: 1.2;
-  text-align: center;
+  letter-spacing: 0;
+  text-align: left;
+  -webkit-font-smoothing: antialiased;
 }
 
 /* ----- Grid -------------------------------------------------------------- */
@@ -53,8 +63,8 @@
 .gg-grid__tile {
   position: relative;
   overflow: hidden;
-  aspect-ratio: 919.78 / 943.14;
-  background: #f8f8f8;
+  aspect-ratio: var(--gg-tile-ratio);
+  background: #eeeeee;
   border-radius: 0;
 }
 
@@ -69,7 +79,9 @@
 
 .gg-grid__empty-label {
   position: absolute;
-  inset: auto 0 12px;
+  right: 0;
+  bottom: 12px;
+  left: 0;
   font-size: 12px;
   text-align: center;
   opacity: 0.6;
@@ -92,16 +104,27 @@
   color: var(--gg-color-black);
   cursor: pointer;
   transform: translate(-50%, -50%);
-  transition: transform var(--gg-btn-duration) ease;
+  transition: transform 0.15s ease;
+}
+
+/* invisible hit area so the small circle stays easy to tap (≥ 32px) */
+.gg-hotspot::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: max(100%, 32px);
+  height: max(100%, 32px);
+  transform: translate(-50%, -50%);
 }
 
 .gg-hotspot:hover,
 .gg-hotspot:focus-visible {
-  transform: translate(-50%, -50%) scale(1.1);
+  transform: translate(-50%, -50%) scale(1.15);
 }
 
 .gg-hotspot:focus-visible {
-  outline: 2px solid var(--gg-color-black);
+  outline: 2px solid #fff544;
   outline-offset: 2px;
 }
 
@@ -142,7 +165,10 @@
    ========================================================================== */
 .gg-popup {
   position: fixed;
-  inset: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
   z-index: 1000;
   display: grid;
   place-items: center;
@@ -155,7 +181,10 @@
 
 .gg-popup__overlay {
   position: absolute;
-  inset: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
   background: rgba(0, 0, 0, 0.45);
 }
 
@@ -311,6 +340,10 @@
   background: var(--gg-swatch);
 }
 
+.gg-popup__pill-label:hover {
+  background: #f5f5f5;
+}
+
 .gg-popup__pill input:checked + .gg-popup__pill-label {
   z-index: 1;
   box-shadow: inset 0 0 0 1px #000000;
@@ -443,19 +476,31 @@ body.gg-popup-open {
 }
 
 /* ==========================================================================
-   Mobile (≤ 749px): 2 × 3 grid, near full width, small gap; popup fills screen
+   Tablet (≤ 1100px): 2 columns, between the two Figma frames
    ========================================================================== */
-@media screen and (max-width: 749px) {
+@media screen and (max-width: 1100px) {
+  .gg-grid__list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* ==========================================================================
+   Mobile (≤ 767px): 2 × 3 grid, 4px gap; popup fills the screen
+   ========================================================================== */
+@media screen and (max-width: 767px) {
   .gg-grid {
-    --gg-grid-width: calc(100% - 36px);
-    --gg-grid-gap: 6px;
-    --gg-grid-margin-top: 28px;
-    --gg-grid-margin-bottom: 32px;
-    --gg-hotspot-size: 24px;
+    --gg-grid-width: calc(100% - 33px);
+    --gg-grid-gap: 4px;
+    --gg-grid-margin-top: 40px;
+    --gg-grid-margin-bottom: 40px;
+    --gg-hotspot-size: 15.714px; /* visual size; ::after keeps a 32px hit area */
+    --gg-heading-size: 24px;
+    --gg-heading-gap: 20px;
+    --gg-tile-ratio: 169 / 186.42;
   }
 
   .gg-grid__heading {
-    margin-bottom: 16px;
+    text-align: center;
   }
 
   .gg-grid__list {
@@ -477,7 +522,7 @@ body.gg-popup-open {
   }
 }
 
-@media screen and (min-width: 750px) {
+@media screen and (min-width: 768px) {
   .gg-grid__heading--mobile-only {
     display: none;
   }
@@ -495,6 +540,10 @@ body.gg-popup-open {
   .gg-hotspot:hover,
   .gg-hotspot:focus-visible {
     transform: translate(-50%, -50%);
+  }
+
+  .gg-hotspot {
+    transition: none;
   }
 
   .gg-popup__add:not(:disabled):hover .gg-btn__arrow,

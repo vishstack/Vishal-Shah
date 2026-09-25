@@ -1,27 +1,5 @@
-{% comment %}
-  ------------------------------------------------------------------------------
-  Gift Guide — Banner section
-  ------------------------------------------------------------------------------
-  Fully custom hero built from scratch (no Dawn image-banner / header reuse).
-  Three stacked parts share one markup tree; CSS grid re-flows them per breakpoint:
-
-    1. Top bar   — brand (left), tagline (center), CHOOSE GIFT (right) on desktop.
-                   Hamburger (left) + centered brand on mobile.
-    2. Hero      — illustration as full-bleed media with the content block
-                   bottom-left on desktop; on mobile the heading/paragraph sit on
-                   white ABOVE the image and SHOP NOW is overlaid on the image.
-    3. Strip     — centered uppercase message; desktop and mobile copy differ.
-
-  Every colour and typographic token is exposed as a `--gg-*` custom property on
-  the section root so `assets/custom-banner.css` stays free of magic numbers.
-  The stylesheet is loaded here only (section-scoped asset loading).
-
-  "Hide theme header/footer" — see the comment block above the `{% style %}`
-  further down for the recommendation and trade-off.
-  ------------------------------------------------------------------------------
-{% endcomment %}
-
 {{ 'custom-banner.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'custom-banner.js' | asset_url }}" defer="defer"></script>
 
 {%- liquid
   assign s = section.settings
@@ -48,25 +26,6 @@
     --gg-font-body-weight: {{ body_font.weight }};
   }
 
-  {%- comment -%}
-    Top bar decision
-    ----------------
-    The Figma top bar visually replaces Dawn's header, so it is built inside this
-    section (editable, no dependency on Dawn's header markup). To avoid showing two
-    headers we hide Dawn's header-group and footer-group with a template-scoped
-    style instead of forking `layout/theme.liquid` into a custom layout:
-
-      + one layout file to maintain — no 400-line copy that drifts on Dawn updates
-      + merchant can flip it in the editor (this toggle) without touching code
-      + the header DOM is still present, so the cart-count bubble keeps updating
-        for the rest of the store and any drawer/notification logic stays intact
-      - header/footer HTML + their JS still load (a few KB) and the bubble is
-        invisible on this page — the quick-view popup therefore shows its own
-        "added to cart" confirmation with a link to the cart.
-
-    A custom layout would truly remove the markup but costs maintainability and
-    editor control, which is why the CSS approach is the recommendation here.
-  {%- endcomment -%}
   {%- if s.hide_theme_chrome -%}
     .shopify-section-group-header-group,
     .shopify-section-group-footer-group {
@@ -88,27 +47,68 @@
     --gg-button-text: {{ s.button_text }};
   "
 >
-  {%- comment -%} 1. Top bar {%- endcomment -%}
-  <div class="gg-topbar">
-    <a class="gg-topbar__menu" href="{{ s.menu_link | default: '#' }}" aria-label="Menu">
-      <svg class="gg-topbar__menu-icon" viewBox="0 0 22 14" width="22" height="14" aria-hidden="true" focusable="false">
-        <path d="M0 1h22M0 7h22M0 13h22" stroke="currentColor" stroke-width="1.6" fill="none"/>
-      </svg>
-    </a>
+  {%- comment -%}
+    1. Top bar
+    Mobile: the hamburger is a <details> disclosure (keyboard accessible with no
+    JS) that reveals the tagline + CHOOSE GIFT in a panel under the bar and swaps
+    its icon to "×" when open. custom-banner.js adds ESC / outside-click closing.
+    Desktop: the disclosure is hidden and the same tagline/button sit inline.
+  {%- endcomment -%}
+  <gift-topbar class="gg-topbar">
+    <details class="gg-topbar__nav">
+      <summary class="gg-topbar__menu" aria-label="Menu">
+        <svg class="gg-topbar__icon gg-topbar__icon--open" viewBox="0 0 22 14" width="22" height="14" aria-hidden="true" focusable="false">
+          <path d="M0 1h22M0 7h22M0 13h22" stroke="currentColor" stroke-width="1.6" fill="none"/>
+        </svg>
+        <svg class="gg-topbar__icon gg-topbar__icon--close" viewBox="0 0 14 14" width="14" height="14" aria-hidden="true" focusable="false">
+          <path d="M1 1l12 12M13 1L1 13" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+        </svg>
+      </summary>
+      <div class="gg-topbar__panel">
+        {%- if s.topbar_text != blank -%}
+          <p class="gg-topbar__panel-text">{{ s.topbar_text | escape }}</p>
+        {%- endif -%}
+        {%- if s.gift_label != blank -%}
+          <a class="gg-btn gg-btn--gift" href="{{ s.gift_link | default: '#' }}">
+            <span class="gg-btn__label">{{ s.gift_label | escape }}</span>
+            {%- render 'gg-arrow-icon' -%}
+          </a>
+        {%- endif -%}
+      </div>
+    </details>
 
-    <p class="gg-topbar__brand">{{ s.brand_text | escape }}</p>
+    {%- comment -%}
+      Brand: the Figma export uses a 151.44 × 19 logo SVG. When a logo image is
+      uploaded it is shown at that size; otherwise the text is styled to match it.
+    {%- endcomment -%}
+    <p class="gg-topbar__brand">
+      {%- if s.logo != blank -%}
+        {{-
+          s.logo
+          | image_url: width: 460
+          | image_tag:
+            widths: '152, 304, 456',
+            sizes: '152px',
+            class: 'gg-topbar__logo',
+            loading: 'eager',
+            alt: s.brand_text
+        -}}
+      {%- else -%}
+        {{- s.brand_text | escape -}}
+      {%- endif -%}
+    </p>
 
     {%- if s.topbar_text != blank -%}
       <p class="gg-topbar__text">{{ s.topbar_text | escape }}</p>
     {%- endif -%}
 
     {%- if s.gift_label != blank -%}
-      <a class="gg-btn gg-btn--gift" href="{{ s.gift_link | default: '#' }}">
+      <a class="gg-btn gg-btn--gift gg-topbar__gift" href="{{ s.gift_link | default: '#' }}">
         <span class="gg-btn__label">{{ s.gift_label | escape }}</span>
         {%- render 'gg-arrow-icon' -%}
       </a>
     {%- endif -%}
-  </div>
+  </gift-topbar>
 
   {%- comment -%} 2. Hero {%- endcomment -%}
   <div class="gg-hero">
@@ -117,7 +117,7 @@
         <picture>
           {%- if image_desktop != blank -%}
             <source
-              media="(min-width: 750px)"
+              media="(min-width: 768px)"
               srcset="
                 {{ image_desktop | image_url: width: 1440 }} 1440w,
                 {{ image_desktop | image_url: width: 1920 }} 1920w,
@@ -144,20 +144,22 @@
       {%- endif -%}
     </div>
 
-    <h1 class="gg-hero__heading">{{ s.heading | escape }}</h1>
+    {%- comment -%} Copy block: overlaid bottom-left on desktop, stacked on mobile {%- endcomment -%}
+    <div class="gg-hero__content">
+      <h1 class="gg-hero__heading">{{ s.heading | escape }}</h1>
 
-    <p class="gg-hero__text gg-hero__text--desktop">{{ s.text_desktop | escape }}</p>
-    <p class="gg-hero__text gg-hero__text--mobile">{{ s.text_mobile | escape }}</p>
+      <p class="gg-hero__text gg-hero__text--desktop">{{ s.text_desktop | escape }}</p>
+      <p class="gg-hero__text gg-hero__text--mobile">{{ s.text_mobile | escape }}</p>
 
-    {%- if s.shop_label != blank -%}
-      <a class="gg-btn gg-btn--shop" href="{{ s.shop_link | default: '#' }}">
-        <span class="gg-btn__label">{{ s.shop_label | escape }}</span>
-        {%- render 'gg-arrow-icon' -%}
-      </a>
-    {%- endif -%}
+      {%- if s.shop_label != blank -%}
+        <a class="gg-btn gg-btn--shop" href="{{ s.shop_link | default: '#' }}">
+          <span class="gg-btn__label">{{ s.shop_label | escape }}</span>
+          {%- render 'gg-arrow-icon' -%}
+        </a>
+      {%- endif -%}
+    </div>
   </div>
 
-  {%- comment -%} 3. Strip {%- endcomment -%}
   <div class="gg-strip">
     <p class="gg-strip__text gg-strip__text--desktop">{{ s.strip_text_desktop | escape }}</p>
     <p class="gg-strip__text gg-strip__text--mobile">{{ s.strip_text_mobile | escape }}</p>
@@ -181,7 +183,14 @@
       "type": "text",
       "id": "brand_text",
       "label": "Brand text",
+      "info": "Also used as the logo's alt text.",
       "default": "TISSO VISON"
+    },
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo image (optional)",
+      "info": "Shown 19px tall (151 × 19 in Figma). Leave empty to use the brand text."
     },
     {
       "type": "text",
@@ -199,12 +208,6 @@
       "type": "url",
       "id": "gift_link",
       "label": "Button link"
-    },
-    {
-      "type": "url",
-      "id": "menu_link",
-      "label": "Hamburger link (mobile only)",
-      "info": "Dawn's header is hidden on this template, so the hamburger links to a page of your choice."
     },
     {
       "type": "header",
@@ -243,13 +246,13 @@
       "type": "image_picker",
       "id": "image_desktop",
       "label": "Illustration (desktop)",
-      "info": "Recommended 3840 × 2000 px, black and white line art."
+      "info": "The hero takes the image's own proportion. Use the 1440 × 780 Figma illustration (export at 2×: 2880 × 1560)."
     },
     {
       "type": "image_picker",
       "id": "image_mobile",
       "label": "Illustration (mobile)",
-      "info": "Different crop for mobile. Falls back to the desktop image."
+      "info": "Mobile crop shown below the text (375 × 264 area in Figma; export at 2×). Falls back to the desktop image."
     },
     {
       "type": "header",
