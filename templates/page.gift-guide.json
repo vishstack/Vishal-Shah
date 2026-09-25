@@ -1,35 +1,90 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "sections": {
     "gift_banner": {
       "type": "custom-banner",
-      "settings": {}
+      "settings": {
+        "brand_text": "TISSO VISON",
+        "topbar_text": "Find the ideal gift for your loved ones.",
+        "gift_label": "CHOOSE GIFT",
+        "gift_link": "",
+        "menu_link": "",
+        "heading": "The Gift Guide",
+        "text_desktop": "Discover Joy: Your Ultimate Holiday Gift Destination. Explore our curated selection and find the perfect gifts to delight your loved ones this holiday season.",
+        "text_mobile": "Discover Joy: Your Ultimate Holiday Gift Destination.",
+        "shop_label": "SHOP NOW",
+        "shop_link": "",
+        "strip_text_desktop": "SUSTAINABLE, ETHICALLY MADE CLOTHES IN SIZES XXS TO 6XL",
+        "strip_text_mobile": "SUSTAINABLE, ETHICALLY MADE ACTIVEWEAR",
+        "topbar_bg": "#f5f5f5",
+        "gift_bg": "#fff544",
+        "gift_text": "#000000",
+        "strip_bg": "#f5f5f5",
+        "button_bg": "#000000",
+        "button_text": "#ffffff",
+        "heading_font": "jost_n5",
+        "body_font": "jost_n4",
+        "hide_theme_chrome": true
+      }
     },
     "gift_grid": {
       "type": "custom-product-grid",
       "blocks": {
         "tile_1": {
           "type": "product",
-          "settings": {}
+          "settings": {
+            "product": "leather-tote-bag",
+            "hotspot_x": 50,
+            "hotspot_y": 50
+          }
         },
         "tile_2": {
           "type": "product",
-          "settings": {}
+          "settings": {
+            "product": "velvet-tuxedo-blazer",
+            "hotspot_x": 50,
+            "hotspot_y": 50
+          }
         },
         "tile_3": {
           "type": "product",
-          "settings": {}
+          "settings": {
+            "product": "",
+            "hotspot_x": 50,
+            "hotspot_y": 50
+          }
         },
         "tile_4": {
           "type": "product",
-          "settings": {}
+          "settings": {
+            "product": "",
+            "hotspot_x": 50,
+            "hotspot_y": 50
+          }
         },
         "tile_5": {
           "type": "product",
-          "settings": {}
+          "settings": {
+            "product": "",
+            "hotspot_x": 50,
+            "hotspot_y": 50
+          }
         },
         "tile_6": {
           "type": "product",
-          "settings": {}
+          "settings": {
+            "product": "",
+            "hotspot_x": 50,
+            "hotspot_y": 50
+          }
         }
       },
       "block_order": [
@@ -40,7 +95,13 @@
         "tile_5",
         "tile_6"
       ],
-      "settings": {}
+      "settings": {
+        "heading": "Tisso vison in the wild",
+        "show_heading_desktop": false,
+        "upsell_product": "",
+        "heading_font": "playfair_display_n4",
+        "body_font": "jost_n4"
+      }
     }
   },
   "order": [
