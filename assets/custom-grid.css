@@ -173,6 +173,7 @@
   display: grid;
   place-items: center;
   padding: 16px;
+  background: #00000038;
 }
 
 .gg-popup[hidden] {
@@ -189,17 +190,17 @@
 }
 
 .gg-popup__dialog {
-  position: relative;
-  box-sizing: border-box;
-  width: 100%;
-  max-width: 460px;
-  max-height: 100%;
-  overflow-y: auto;
-  padding: 36px 28px 28px;
-  background: var(--gg-color-white);
-  color: var(--gg-color-black);
-  font-size: 13px;
-  line-height: 1.4;
+    position: relative;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 311px;
+    max-height: 100%;
+    overflow-y: auto;
+    padding: 36px 20px 25px;
+    background: var(--gg-color-white);
+    color: var(--gg-color-black);
+    font-size: 13px;
+    line-height: 1.4;
 }
 
 .gg-popup__dialog:focus {
@@ -212,8 +213,8 @@
   right: 12px;
   display: grid;
   place-items: center;
-  width: 32px;
-  height: 32px;
+  width: 25px;
+  height: 25px;
   padding: 0;
   border: 0;
   background: transparent;
@@ -233,7 +234,7 @@
 .gg-popup__summary {
   display: grid;
   grid-template-columns: 120px 1fr;
-  gap: 18px;
+  gap: 8px;
   align-items: start;
 }
 
@@ -241,6 +242,8 @@
   aspect-ratio: 1;
   overflow: hidden;
   background: #f8f8f8;
+  height: 140px;
+  width: 120px;
 }
 
 .gg-popup__img {
@@ -251,39 +254,46 @@
 }
 
 .gg-popup__title {
-  margin: 0 0 10px;
-  font-size: 15px;
-  font-weight: inherit;
-  line-height: 1.3;
+    margin: 0 0 10px;
+    font-weight: 300;
+    font-size: 16px;
+    line-height: 120%;
+    color: #000000;
+    letter-spacing: 0;
 }
-
 .gg-popup__price {
-  margin: 0 0 12px;
-  font-size: 15px;
+    margin: 0 0 12px;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 120%;
+    letter-spacing: 0px;
+    color: #000;
 }
-
 .gg-popup__description {
-  font-size: 11px;
-  line-height: 1.45;
-  color: #555555;
+    color: #000;
+    font-weight: 300;
+    font-size: 14px;
+    line-height: 110%;
+    letter-spacing: -1%;
 }
-
 .gg-popup__description p {
   margin: 0;
 }
 
 /* option groups */
 .gg-popup__group {
-  margin: 22px 0 0;
+  margin: 10px 0 0;
   padding: 0;
   border: 0;
   min-width: 0;
 }
-
 .gg-popup__label {
-  display: block;
-  margin-bottom: 8px;
-  font-size: 12px;
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 130%;
+    letter-spacing: 0%;
 }
 
 /* pills (colour-type options): equal width, shared borders, colour strip left */
@@ -313,21 +323,24 @@
 }
 
 .gg-popup__pill-label {
-  --gg-swatch: transparent;
-
-  position: relative;
-  display: flex;
-  align-items: center;
-  box-sizing: border-box;
-  height: 38px;
-  padding: 0 12px 0 14px;
-  border: 1px solid #000000;
-  font-size: 13px;
-  cursor: pointer;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  transition: background-color var(--gg-btn-duration) ease;
+    --gg-swatch: transparent;
+    position: relative;
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+    height: 38px;
+    padding: 0 12px 0 14px;
+    border: 1px solid #000000;
+    font-size: 13px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: background-color var(--gg-btn-duration) ease;
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 100%;
+    letter-spacing: -2%;
+    text-transform: capitalize;
 }
 
 .gg-popup__pill-label::before {
@@ -410,7 +423,7 @@
   box-sizing: border-box;
   width: 100%;
   height: 46px;
-  margin-top: 32px;
+  margin-top: 51px;
   border: 1px solid var(--gg-color-black);
   border-radius: 0;
   background: var(--gg-color-black);
@@ -427,15 +440,9 @@
 }
 
 .gg-popup__add .gg-btn__arrow {
-  width: 28px;
-  height: auto;
+  width: 27px;
+  height: 12px;
   transition: transform var(--gg-btn-duration) ease;
-}
-
-.gg-popup__add:not(:disabled):hover,
-.gg-popup__add:not(:disabled):focus-visible {
-  background: var(--gg-color-white);
-  color: var(--gg-color-black);
 }
 
 .gg-popup__add:not(:disabled):hover .gg-btn__arrow,
@@ -492,7 +499,7 @@ body.gg-popup-open {
     --gg-grid-width: calc(100% - 33px);
     --gg-grid-gap: 4px;
     --gg-grid-margin-top: 40px;
-    --gg-grid-margin-bottom: 40px;
+    --gg-grid-margin-bottom: 23.74px;
     --gg-hotspot-size: 15.714px; /* visual size; ::after keeps a 32px hit area */
     --gg-heading-size: 24px;
     --gg-heading-gap: 20px;
@@ -516,10 +523,6 @@ body.gg-popup-open {
     padding: 40px 20px 20px;
   }
 
-  .gg-popup__summary {
-    grid-template-columns: 96px 1fr;
-    gap: 14px;
-  }
 }
 
 @media screen and (min-width: 768px) {
