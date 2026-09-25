@@ -124,28 +124,24 @@
   flex: 0 0 auto;
 }
 
-/* pointer devices only, so a tap on touch screens never leaves it "stuck" */
-@media (hover: hover) {
-  .gg-btn:hover {
-    color: var(--btn-hover-fg);
-    box-shadow: var(--gg-shadow-btn);
-  }
-
-  .gg-btn:hover::before {
-    transform: scaleX(1);
-  }
-}
-
-/* keyboard focus gets the same look */
+/* Hover + keyboard focus share the same state. Deliberately NOT wrapped in
+   `@media (hover: hover)`: Chromium reports `hover: none` on many Windows
+   touch-screen laptops (and in some previews), which silently disabled the
+   animation even with a mouse attached. */
+.gg-btn:hover,
 .gg-btn:focus-visible {
-  outline: 2px solid var(--gg-color-black);
-  outline-offset: 3px;
   color: var(--btn-hover-fg);
   box-shadow: var(--gg-shadow-btn);
 }
 
+.gg-btn:hover::before,
 .gg-btn:focus-visible::before {
   transform: scaleX(1);
+}
+
+.gg-btn:focus-visible {
+  outline: 2px solid var(--gg-color-black);
+  outline-offset: 3px;
 }
 
 /* SHOP NOW 220 × 50: label box 55 → 142px (87 wide), arrow 27 × 12 at 170.3px.

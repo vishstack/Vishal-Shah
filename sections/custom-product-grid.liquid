@@ -11,9 +11,29 @@
   {{ heading_font | font_face: font_display: 'swap' }}
   {{ body_font | font_face: font_display: 'swap' }}
 
+  {%- comment -%}
+    The Figma heading font (Lustria, SIL Open Font License) is not part of
+    Shopify's font library, so it is bundled as a theme asset and only loaded
+    here, by the section that uses it. The font picker stays as the fallback.
+  {%- endcomment -%}
+  {%- if s.use_figma_serif -%}
+    @font-face {
+      font-family: 'Lustria';
+      src: url('{{ 'lustria-regular.woff2' | asset_url }}') format('woff2');
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
+  {%- endif -%}
+
   #shopify-section-{{ section.id }} .gg-grid {
-    --gg-font-heading: {{ heading_font.family }}, {{ heading_font.fallback_families }};
-    --gg-font-heading-weight: {{ heading_font.weight }};
+    {%- if s.use_figma_serif %}
+      --gg-font-heading: 'Lustria', {{ heading_font.family }}, {{ heading_font.fallback_families }};
+      --gg-font-heading-weight: 400;
+    {%- else %}
+      --gg-font-heading: {{ heading_font.family }}, {{ heading_font.fallback_families }};
+      --gg-font-heading-weight: {{ heading_font.weight }};
+    {%- endif %}
     --gg-font-body: {{ body_font.family }}, {{ body_font.fallback_families }};
     --gg-font-body-weight: {{ body_font.weight }};
   }
@@ -136,9 +156,16 @@
       "content": "Typography"
     },
     {
+      "type": "checkbox",
+      "id": "use_figma_serif",
+      "label": "Use Figma heading font (Lustria)",
+      "info": "Bundled with the theme. Turn off to use the font picker below instead.",
+      "default": true
+    },
+    {
       "type": "font_picker",
       "id": "heading_font",
-      "label": "Heading font (serif)",
+      "label": "Heading font (fallback)",
       "default": "jost_n4"
     },
     {

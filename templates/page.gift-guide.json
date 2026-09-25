@@ -101,6 +101,7 @@
         "heading": "Tisso vison in the wild",
         "show_heading_desktop": true,
         "upsell_product": "soft-winter-jacket",
+        "use_figma_serif": true,
         "heading_font": "jost_n4",
         "body_font": "jost_n4"
       }
